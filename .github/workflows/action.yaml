@@ -46,11 +46,19 @@ jobs:
               uses: actions-ecosystem/action-get-latest-tag@v1
 
             - name: Increment version
-              id: increment-version
-              uses: paulhatch/semver-action@v2
-              with:
-                tag: ${{ steps.get-latest-tag.outputs.tag }}
-                increment: patch
+              id: increment_version
+              run: |
+                latest_tag=${{ steps.get_latest_tag.outputs.tag }}
+                if [[ $latest_tag =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                  IFS='.' read -r -a version_parts <<< "${latest_tag#v}"
+                  version_parts[2]=$((version_parts[2] + 1))
+                  new_version="v${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
+                  echo "new_version=$new_version" >> $GITHUB_ENV
+                else
+                  # echo "Invalid tag format: $latest_tag"
+                  # exit 1
+                  echo "new_version=v0.0.1" >> $GITHUB_ENV
+                fi
 
             - name: Create release
               id: create-release
