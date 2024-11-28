@@ -1,4 +1,4 @@
-name: Build my Lambda Function
+name: Build Lambda Function
 
 on:
     push:
