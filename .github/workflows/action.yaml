@@ -153,7 +153,7 @@ jobs:
 
       - name: Destroy Test Function
         if : ${{ always() }}
-        run: aws lambda delete-function --function-name my-test-function
+        run: aws lambda delete-function --function-name my-test-function-${{ matrix.input }}
 
   deploy:
     name: Deploy
