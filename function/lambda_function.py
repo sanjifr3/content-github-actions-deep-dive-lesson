@@ -12,4 +12,4 @@ def lambda_handler(event, context):
         return "World"
 
     else:
-        raise
+        raise Exception("Invalid input")
