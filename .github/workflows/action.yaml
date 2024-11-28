@@ -6,6 +6,27 @@ on:
             - main
     
 jobs:
+
+  lint:
+      runs-on: ubuntu-latest
+
+      steps:
+          - name: Checkout code
+            uses: actions/checkout@v4
+
+          - name: Set up Python
+            uses: actions/setup-python@v4
+            with:
+              python-version: 3.8
+          
+          - name: Install libraries
+            run: pip install flake8
+          
+          - name: Lint with flake8
+            run: |
+              cd function
+              flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+              flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
     
     build:
         runs-on: ubuntu-latest
@@ -41,33 +62,14 @@ jobs:
         needs: build
         
         steps:
-            - name: Get latest tag
-              id: get-latest-tag
-              uses: actions-ecosystem/action-get-latest-tag@v1
-
-            - name: Increment version
-              id: increment_version
-              run: |
-                latest_tag=${{ steps.get_latest_tag.outputs.tag }}
-                if [[ $latest_tag =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-                  IFS='.' read -r -a version_parts <<< "${latest_tag#v}"
-                  version_parts[2]=$((version_parts[2] + 1))
-                  new_version="v${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
-                  echo "new_version=$new_version" >> $GITHUB_ENV
-                else
-                  # echo "Invalid tag format: $latest_tag"
-                  # exit 1
-                  echo "new_version=v0.0.1" >> $GITHUB_ENV
-                fi
-
             - name: Create release
               id: create-release
               uses: actions/create-release@v1
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                tag_name: ${{ steps.increment_version.outputs.new_tag }}
-                release_name: Release from ${{ steps.increment_version.outputs.new_tag }}
+                tag_name: ${{ github.run_number}}
+                release_name: Release from ${{ github.run_number }}
                 body: |
                     New release from ${{ github.sha }}. 
                     Release notes are in the documentation site.
