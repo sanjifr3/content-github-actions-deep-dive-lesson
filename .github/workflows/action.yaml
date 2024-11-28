@@ -41,14 +41,25 @@ jobs:
         needs: build
         
         steps:
+            - name: Get latest tag
+              id: get-latest-tag
+              uses: actions-ecosystem/action-get-latest-tag@v1
+
+            - name: Increment version
+              id: increment-version
+              uses: paulhatch/semver-action@v2
+              with:
+                tag: ${{ steps.get-latest-tag.outputs.tag }}
+                increment: patch
+
             - name: Create release
               id: create-release
               uses: actions/create-release@v1
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                tag_name: ${{ github.run_number}}
-                release_name: Release from ${{ github.run_number }}
+                tag_name: ${{ steps.increment_version.outputs.new_tag }}
+                release_name: Release from ${{ steps.increment_version.outputs.new_tag }}
                 body: |
                     New release from ${{ github.sha }}. 
                     Release notes are in the documentation site.
