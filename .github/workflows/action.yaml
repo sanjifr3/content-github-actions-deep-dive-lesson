@@ -193,11 +193,11 @@ jobs:
     needs: deploy
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
       
-      - name: Deploy documentation
+      - name: Deploy Documentation
         uses: mhausenblas/mkdocs-deploy-gh-pages@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CONFIG_FILE: mkdocs.yml
+          CONFIG_FILE: mkdocs.yaml
