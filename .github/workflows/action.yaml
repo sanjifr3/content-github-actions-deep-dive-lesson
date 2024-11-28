@@ -141,6 +141,17 @@ jobs:
             --handler lambda_function.lambda_handler --runtime python3.8 \
             --role arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-lambda-role 
 
+      - name: Wait for Lambda Function to be Active
+        run: |
+          while true; do
+            state=$(aws lambda get-function --function-name my-test-function-${{ matrix.input }} --query 'Configuration.State' --output text)
+            if [ "$state" == "Active" ]; then
+              break
+            fi
+            echo "Waiting for function to be active..."
+            sleep 10
+          done
+
       - name: Invoke Test Function
         run: |
           aws lambda invoke --function-name my-test-function-${{ matrix.input }} \
