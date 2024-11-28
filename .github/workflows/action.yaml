@@ -136,8 +136,8 @@ jobs:
 
       - name: Create test function  
         run: |
-          aws lambda create-function --function-name test-function \
-            --code S3Bucket=YOUR_S3_BUCKET,S3Key=${{ github.sha }}.zip \
+          aws lambda create-function --function-name my-test-function \
+            --code S3Bucket=my-bucket-sr43243,S3Key=${{ github.sha }}.zip \
             --handler lambda_function.lambda_handler --runtime python3.8 \
             --role arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-lambda-role 
       
@@ -146,7 +146,7 @@ jobs:
       
       - name: Destroy test function
         if : ${{ always() }}
-        run: aws lambda delete-function --function-name test-function
+        run: aws lambda delete-function --function-name my-test-function
 
   deploy:
     name: Deploy
